@@ -1,0 +1,57 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/    #注册中心服务地址
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ipaddress}:${server.port}
+feign:
+  hystrix:
+    enabled: true
+
+
+server:
+  port: 8782
+  max-http-header-size: 5242880
+
+spring:
+  profiles:
+    active: dev #开发环境
+  application:
+    name: service-upload
+  cloud:
+     client:
+        ipAddress: 127.0.0.1          #服务消费者ip地址
+    # 格式化时间
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+#日志输出配置
+logging:
+  level:
+    root: INFO
+    org.hibernate: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
+    org.hibernate.type.descriptor.sql.BasicExtractor: INFO
+    com.itmuch: INFO
+    org.springframework: INFO
+    com.wuzhenpay.service.app.upload: DEBUG
+
+#自定义常量,ftp的基本配置
+ftp-params-config:
+    ftp_address: 47.97.44.46
+    ftp_port: 2048
+    ftp_username: LTAIVspE4rGf3gFF/wuzhenpay
+    ftp_password: XM7XiaMz86gQUGMO68QlGVDwy1Z8GJ
+    ftp_base_path: /
+    image_base_url: https://file.wuzhenpay.com
+
+#自定义常量,上传基本配置
+ucloud-params-config:
+  channel: oss
+  oss:
+    address: http://oss-cn-hangzhou.aliyuncs.com
+    key_id: LTAIVspE4rGf3gFF
+    key_secret: XM7XiaMz86gQUGMO68QlGVDwy1Z8GJ
+    bucket: wuzhenpay
+    image_base_url: https://file.wuzhenpay.com

@@ -1,0 +1,108 @@
+server:
+  port: 8778
+spring:
+  profiles:
+    active: dev
+  application:
+      name: service-scheduler
+  cloud:
+     client:
+        ipAddress: 127.0.0.1          #服务消费者ip地址
+  # 格式化时间
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  time-zone: GMT+8
+  datasource:
+      name: test
+      url: jdbc:mysql://rm-bp1ac3sqql7dt8w34o.mysql.rds.aliyuncs.com:3306/db_wuzhenpay??useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+      username: wuzhenpay
+      password: A5tRqvnVEUbdwSHnG@
+      # 使用druid数据源
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+      filters: stat
+      maxActive: 20
+      initialSize: 1
+      maxWait: 60000
+      minIdle: 1
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: select 'x'
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxOpenPreparedStatements: 20
+  #redis缓存 单机版
+  redis:
+      host: 192.168.10.87
+      port: 6379
+      maxTotal: 200
+      pool:
+        max-active: 8
+        min-idle: 0
+        max-idle: 8
+        max-wait: 10000
+      timeout: 10000
+  # 消息队列
+  rabbitmq:
+      host: 192.168.0.136
+      port: 5672
+      username: guest
+      password: guest
+      virtual-host: /
+mybatis:
+    mapper-locations: classpath:mybatis/mappers/*.xml
+    type-aliases-package: com.wuzhenpay.service.scheduler.model
+
+#pagehelper分页插件
+pagehelper:
+    helperDialect: mysql
+    reasonable: true
+    supportMethodsArguments: true
+    params: count=countSql
+
+#日志输出配置
+logging:
+  level:
+    root: INFO
+    org.hibernate: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
+    org.hibernate.type.descriptor.sql.BasicExtractor: INFO
+    com.itmuch: INFO
+    com.wuzhenpay.service.scheduler.mapper: DEBUG
+    org.springframework: INFO
+    
+    
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/    #注册中心服务地址
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ipaddress}:${server.port}
+feign:
+  hystrix:
+    enabled: true
+
+#分布式xxl配置
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:8080/xxl-job-admin
+    accessToken:
+    executor:
+      logpath: /data/applogs/xxl-job/jobhandler
+      logretentiondays: -1
+      ip:
+      port: 9997
+      appname: xxl-job-executor-sample
+
+#熔断器启动时间为 5 秒 ,默认是1秒
+hystrix:
+  command:
+      default:
+        execution:
+          isolation:
+            thread:
+              timeoutInMilliseconds: 5000

@@ -1,0 +1,111 @@
+server:
+  port: 8779
+spring:
+  profiles:
+    active: dev #开发环境
+  application:
+    name: service-message
+  cloud:
+     client:
+        ipAddress: 127.0.0.1          #服务消费者ip地址
+  datasource:
+      name: test
+      url: jdbc:mysql://rm-bp1ac3sqql7dt8w34o.mysql.rds.aliyuncs.com:3306/db_wuzhenpay??useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+      username: wuzhenpay
+      password: A5tRqvnVEUbdwSHnG@
+      # 使用druid数据源
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+      filters: stat
+      maxActive: 20
+      initialSize: 1
+      maxWait: 60000
+      minIdle: 1
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: select 'x'
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxOpenPreparedStatements: 20
+  # 格式化时间
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  # 消息队列
+  rabbitmq:
+    addresses: 192.168.10.21:5672,192.168.10.22:5672,192.168.10.23:5672
+    username: admin
+    password: admin
+    virtual-host: /
+  #redis缓存 单机版
+  redis:
+    host: 192.168.10.87
+    port: 6379
+    maxTotal: 200
+    pool:
+      max-active: 8
+      min-idle: 0
+      max-idle: 8
+      max-wait: 10000
+    timeout: 10000
+    #password: stevexu
+#  redis:
+#    cluster:
+#      nodes: 192.168.10.21:6379,192.168.10.21:6380,192.168.10.22:6379,192.168.10.22:6380,192.168.10.23:6379,192.168.10.23:6380
+#      max-redirects: 6
+mybatis:
+    mapper-locations: classpath:mybatis/mappers/*.xml
+    type-aliases-package: com.wuzhenpay.service.merchant.model
+
+#pagehelper分页插件
+pagehelper:
+    helperDialect: mysql
+    reasonable: true
+    supportMethodsArguments: true
+    params: count=countSql
+
+#日志输出配置
+logging:
+  level:
+    root: INFO
+    org.hibernate: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
+    org.hibernate.type.descriptor.sql.BasicExtractor: INFO
+    com.itmuch: INFO
+    org.springframework: INFO
+    com.wuzhenpay.service.message.feign: DEBUG
+    com.wuzhenpay.service.message.mapper: DEBUG
+    
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ipaddress}:${server.port}
+feign:
+  hystrix:
+    enabled: true
+
+#熔断器启动时间为 15 秒 ,默认是1秒
+hystrix:
+  command:
+      default:
+        execution:
+          isolation:
+            thread:
+              timeoutInMilliseconds: 15000
+
+#ribbon请求连接的超时时间
+ribbon:
+  ConnectTimeout: 12000
+  #请求处理的超时时间
+  ReadTimeout: 12000
+  #对所有操作请求都进行重试
+  OkToRetryOnAllOperations: true
+  #对当前实例的重试次数
+  MaxAutoRetries: 1
+  #对下个实例的重试次数
+  MaxAutoRetriesNextServer: 1
